@@ -3,8 +3,7 @@
 
 **Examples and exercise of \<\<high peformance python\>\>**
 
-
-A backup
+**Tesseract-OCR image_to_string**
 
 **A srt download tool with tkinter and urllib**
 
