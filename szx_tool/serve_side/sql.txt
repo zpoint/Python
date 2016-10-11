@@ -1,0 +1,53 @@
+create table mainmessage
+(
+	userid bigint unsigned not null auto_increment primary key,
+	name varchar(50) not null,
+	sex varchar(10) not null,
+	birth varchar(15) not null,
+	ID bigint(18) unsigned not null,
+	nation varchar(30) not null,
+	grade char(10) not null,
+	college varchar(50) not null,
+	major varchar(50) not null,
+	class varchar(10) not null,
+	exam_num bigint unsigned not null,
+	en_name varchar(50) not null,
+	phone_num bigint unsigned not null,
+	zip_code int unsigned not null,
+	address varchar(150) not null,
+	constellation varchar(10) not null,
+	password varchar(20) not null,
+	second_major varchar(15) not null,
+	begin_semester int unsigned not null,
+	end_semester int unsigned not null,
+	time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version float unsigned not null,
+	total_time int unsigned not null
+);
+
+                        course_order_num INT UNSIGNED NOT NULL,
+                        course_num VARCHAR(30) NOT NULL PRIMARY KEY,
+                        semester_num INT UNSIGNED NOT NULL,
+                        course_name VARCHAR(100) NOT NULL,
+                        course_type VARCHAR(20) NOT NULL,
+                        score FLOAT(5) UNSIGNED NOT NULL,
+                        get_score FLOAT(5) UNSIGNED NOT NULL,
+                        grade VARCHAR(5) NOT NULL,
+                        GPA FLOAT(5) UNSIGNED NOT NULL,
+                        GPA_weight FLOAT(5) UNSIGNED NOT NULL
+
+
+| userid     | password | name      |
++------------+----------+-----------+
+| 2013050001 | 19950408 | ∑Ω◊œ’’    |
+| 2013140002 | 070869   | ’≈Ë∏’‹    |
+| 2013140008 | 270014   | ≥¬—Ô—Ô    |
+| 2013140018 | 81733363 | À’»Ò¥œ    |
+| 2013140033 | 137138   | π˘‘Û∆Ω    |
+| 2013140045 | 143827   | „∆Í∆      |
+| 2013140046 | 234216   | ¿Ó•±˛    |
+| 2013140070 | 000000   | ¿Ó¥∫≥œ    |
+| 2013140115 | 941219   | ¡ı∂´∆Ω    |
+| 2013800442 | 010302   | ÷£ª¿º—    |
+| 2014140139 | 014748   | ÷£Ω‡—˛    |
+| 2014140154 | 111111   | π˘Ù·      |
