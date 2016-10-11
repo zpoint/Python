@@ -23,11 +23,11 @@
 - - -
 ####Screenshots:
 
-![image](https://github.com/zpoint/szx-tools/blob/master/Screenshots/a.png)
+![image](https://github.com/zpoint/Python/blob/master/szx_tool/Screenshots/a.png)
 
-![image](https://github.com/zpoint/szx-tools/blob/master/Screenshots/b.png)
+![image](https://github.com/zpoint/Python/blob/master/szx_tool/Screenshots/b.png)
 
-![image](https://github.com/zpoint/szx-tools/blob/master/Screenshots/c.png)
+![image](https://github.com/zpoint/Python/blob/master/szx_tool/Screenshots/c.png)
 
 
 
