@@ -5,4 +5,4 @@ Run
 
     python3 srt_downloader.py
     
-![image](https://github.com/zpoint/Python/blob/master/screenshots/1.png)
+![image](https://github.com/zpoint/Python/blob/master/srt%20download/screenshots/1.png)

@@ -33,15 +33,15 @@ It will keep working until system shutdown, reboot or you send a signal to stop 
 #####Screenshots
 **contents it will email user**
 
-![image](https://github.com/zpoint/train_spider/blob/master/screenshots/4.png)
+![image](https://github.com/zpoint/Python/blob/master/train_spider/screenshots/4.png)
 
 **First register in "train_register.php" with invited code “郭大帅”**
- ![image](https://github.com/zpoint/train_spider/blob/master/screenshots/1.png)
+ ![image](https://github.com/zpoint/Python/blob/master/train_spider/screenshots/1.png)
 
 **Second log in in "train_login.php"**
-![image](https://github.com/zpoint/train_spider/blob/master/screenshots/2.png)
+![image](https://github.com/zpoint/Python/blob/master/train_spider/screenshots/2.png)
 
 **Third, Add your train in your wish list in the webpage "train.php"**
-![image](https://github.com/zpoint/train_spider/blob/master/screenshots/3.png)
+![image](https://github.com/zpoint/Python/blob/master/train_spider/screenshots/3.png)
 
 
