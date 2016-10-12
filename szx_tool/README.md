@@ -1,6 +1,6 @@
 ###Credit statistic tools
 
-_ _ _
+- - -
 
 
 * [Update](#update-2.02)
