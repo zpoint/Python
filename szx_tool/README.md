@@ -1,6 +1,7 @@
 ###Credit statistic tools
 
-- - -
+_ _ _
+
 
 * [Update](#update-2.02)
 * [Installation](#installation)
@@ -12,7 +13,7 @@
 
 - - -
 
-####Update 2.02
+###Update 2.02
 1. cache contents, Make user feel faster
 2. more dialogs
 3. help message
@@ -49,7 +50,7 @@ to get chinese character. You don't need a php page to store content in a txt fi
 
 * * *
 
-####How it works
+###How it works
 1. Use urllib to gain plain text imformation from the school lan network.
 2. Parse imformation with regular expression.
 3. POST the imformation to server.
@@ -61,7 +62,7 @@ to get chinese character. You don't need a php page to store content in a txt fi
 
 
 
-####Screenshots
+###Screenshots
 
 ![image](https://github.com/zpoint/Python/blob/master/szx_tool/Screenshots/a.png)
 
