@@ -1,13 +1,5 @@
 from PIL import Image
 import os
-"""
-import pytesseract
-image = Image.open('C:\\Users\\z\\Desktop\\1.png')
-vcode = pytesseract.image_to_string(image, lang='chi_sim')
-print(vcode)
-with open('C:\\Users\\z\\Desktop\\1.txt', 'w', encoding='utf8') as f:
-    f.write(vcode)
-"""
 
 def cut(im, piece = 1, vertical = True):
     """横向(纵向)平均分成piece等分, 返回 [region1, region2...region(piece)]"""
