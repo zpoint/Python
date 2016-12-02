@@ -1,6 +1,8 @@
 import teambition
+import func
 
 if __name__ == "__main__":
-    t = teambition.teambition()
+    func.fix_cookie_format("/home/zpoint/Desktop/cookies.txt")
+    #t = teambition.teambition()
     #t.login()
-    t.refresh()
+    #t.refresh()

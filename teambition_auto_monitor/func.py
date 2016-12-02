@@ -10,3 +10,10 @@ def pr_dir(obj):
         exec(r'print((type(obj.%s), obj.%s))' % (each_attr, each_attr))
     print("Finish Call pr_dir for ", end="")
     print(obj)
+
+
+def fix_cookie_format(filedir):
+    result = ""
+    with open(filedir, "r") as f:
+        for line in f.readlines():
+            print(line)
