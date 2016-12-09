@@ -1,8 +1,10 @@
 import teambition
+import logging
 import func
-
+"""
+Download https://link.zhihu.com/?target=https%3A//github.com/mozilla/geckodriver/releases
+add it to system path
+"""
 if __name__ == "__main__":
-    cookie_file = "/home/zpoint/Desktop/cookies.txt"
-    func.fix_cookie_format(cookie_file, filter_domain=(".teambition.com", ))
-    # t = teambition.teambition()
-    t.refresh()
+    monitor = teambition.teambition()
+    logging.info("")
