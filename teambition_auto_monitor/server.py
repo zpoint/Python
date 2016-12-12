@@ -6,5 +6,5 @@ Download https://link.zhihu.com/?target=https%3A//github.com/mozilla/geckodriver
 add it to system path
 """
 if __name__ == "__main__":
-    monitor = teambition.teambition()
     logging.info("")
+    monitor = teambition.teambition()
