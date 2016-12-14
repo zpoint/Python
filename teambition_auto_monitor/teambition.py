@@ -39,6 +39,7 @@ class teambition(object):
         time.sleep(3)  # for login, the "wait until" in selenium has bug
         self.get_notify()  # find notify in DOM
         self.loop_time = 1
+        self.loop()
 
     @button_wrapper
     def loop(self):
@@ -129,7 +130,7 @@ class teambition(object):
             "week_tasks": '//div[@class="week-tasks"]/ul[@class="task-list my-list"]'
         }
         today_tasks_ul = self.driver.find_element_by_xpath(xpaths["today_tasks"])
-        return tuple(today_tasks_ul)
+        return (today_tasks_ul, )
 
     def parse_tasks_ul(self, tasks):
         ls_items = tasks.find_elements_by_xpath('./li')
