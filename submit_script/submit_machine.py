@@ -1,6 +1,6 @@
-import requests
 import re
-import time
+import urllib.request
+import urllib.parse
 import os.path
 
 machine_dict = {
@@ -77,15 +77,17 @@ def login(username, password):
     }
     url = "http://192.168.30.2/login_check.asp"
     print("正在登录, 请稍后....")
-    r = requests.post(url, data=param, headers=headers)
-    r.encoding = "gbk"
-    if "back" in r.text:
-        right_msg = r.text[r.text.index("'") + 1:]
+    req = urllib.request.Request(url, headers=headers)
+    data = urllib.parse.urlencode(param).encode("gbk")
+    response = urllib.request.urlopen(req, data=data)
+    text = response.read().decode("gbk")
+    if "back" in text:
+        right_msg = text[text.index("'") + 1:]
         err_msg = right_msg[:right_msg.index("'")]
         print("登录失败, 请修改配置文件后重新运行程序, 错误信息: %s" % (err_msg, ))
         return False
     print("登陆成功...")
-    return r
+    return response
 
 
 def submit(login_response, parameters):
@@ -101,21 +103,23 @@ def submit(login_response, parameters):
         paramaters[key] = value.encode("gbk")
     headers["Cookie"] = cookies
 
-    r = requests.post(url, data=paramaters, headers=headers)
-    r.encoding = "gbk"
-    if "成功" in r.text:
-        succ_msg = r.text[r.text.index("'")+1:]
+    req = urllib.request.Request(url, headers=headers)
+    data = urllib.parse.urlencode(paramaters).encode("gbk")
+    response = urllib.request.urlopen(req, data=data)
+    text = response.read().decode("gbk")
+    if "成功" in text:
+        succ_msg = text[text.index("'")+1:]
         succ_msg = succ_msg[:succ_msg.index("'")]
         if not succ_msg:
             succ_msg = "提交成功"
         return True, succ_msg
-    elif "错误" in r.text:
+    elif "错误" in text:
         err_msg = "提交后返回错误, 参数有误, 请修改后重新提交..."
-    elif "已经有人预约" in r.text:
-        err_msg = r.text[r.text.index("'")+1:]
+    elif "已经有人预约" in text:
+        err_msg = text[text.index("'")+1:]
         err_msg = err_msg[:err_msg.index("'")]
     else:
-        err_msg = r.text
+        err_msg = text
     return False, err_msg
 
 
@@ -152,7 +156,7 @@ def get_config(first_time=True):
                 gbk_content = b"#%-60s\t %-3s\r\n" % (value.encode("gbk"), key.encode("gbk"))
                 content += gbk_content.decode("gbk")
             f.write(content)
-        input("已初始化 %s 文件, 请修改并保存按确认键继续....\r\n\r\n" % (config_dir, ))
+        input("已初始化配置文件, 请在当前目录打开 %s 修改并保存按确认键继续....\r\n\r\n" % (config_dir, ))
 
     paramaters = {}
     file_order = ("username", "password", "independence", "machid", "direction", "startdate", "starttime",
@@ -193,6 +197,7 @@ if __name__ == "__main__":
     paramaters = get_config()  # fill in paramaters
     login_response = login(paramaters["username"], paramaters["password"])
     while not login_response:
+        input("请打开当前目录的 %s 文件进行修改, 保存后按确认键继续....\r\n\r\n" % (config_dir,))
         paramaters = get_config()
         login_response = login(paramaters["username"], paramaters["password"])
 
