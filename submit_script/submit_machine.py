@@ -1,8 +1,7 @@
 import requests
 import re
+import time
 import os.path
-
-config_dir = "machine_config.txt"
 
 machine_dict = {
     '15': 'X射线小角散射仪',
@@ -60,58 +59,65 @@ machine_dict = {
     '72': '振动样品磁强计',
     '73': '透射电子显微镜-能谱仪',
 }
-
-paramaters = {}
+headers = {
+    "Host": "192.168.30.2",
+    "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Encoding": "deflate",
+    "Connection": "close",
+    "Content-Type": "application/x-www-form-urlencoded"
+}
+config_dir = "machine_config.txt"
 
 
 def login(username, password):
-    paramaters = {
+    param = {
         "username": username.encode("gbk"),
         "password": password.encode("gbk")
     }
-    headers = {
-        "Host": "192.168.30.2",
-        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Encoding": "deflate",
-        "Connection": "close",
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
     url = "http://192.168.30.2/login_check.asp"
     print("正在登录, 请稍后....")
-    r = requests.post(url, data=paramaters, headers=headers)
+    r = requests.post(url, data=param, headers=headers)
     r.encoding = "gbk"
     if "back" in r.text:
         right_msg = r.text[r.text.index("'") + 1:]
         err_msg = right_msg[:right_msg.index("'")]
         print("登录失败, 请修改配置文件后重新运行程序, 错误信息: %s" % (err_msg, ))
-    print(r.headers["Set-Cookie"])
+        return False
+    print("登陆成功...")
+    return r
 
 
-def submit(login_r, file_content):
-    paramaters = {
-        "action": file_content["mach"],
-        "userid": "1352",
-        "ASPSESSIONIDASQACQRA": "KNLBLKOBHPJHHOMMDOIBEBMP",
-        "independence": "1",
-        "machid": "73",
-        "direction": "%B1%CF%D2%B5%C2%DB%CE%C4",
-        "startdate": "2017-01-07",
-        "starttime": "9%3A00%3A00",
-        "enddate": "2017-01-07",
-        "endtime": "12%3A00%3A00",
-        "sample": "5",
-        "handle": "0",
-        "aim": "%B2%E2%CA%D4%C4%BF%B5%C4",
-        "describle": "%D1%F9%C6%B7%D7%E9%B3%C9%BC%B0%C3%E8%CA%F6",
-        "argument": "%B2%E2%CA%D4%B2%CE%CA%FD",
-        "special": "%CE%DE",
-        "handles": "1",
-        "remark": "%D4%DD%CE%DE"
-    }
+def submit(login_response, parameters):
+    print("正在提交...")
+    url = "http://192.168.30.2/booking_submit.asp?action=mach&userid=1399"
+    # init parameters
+    paramaters.pop("username")
+    paramaters.pop("password")
+    cookies = login_response.headers["Set-Cookie"].split(";")[0]
+    left, right = cookies.split("=")
+    paramaters[left] = right
+    for key, value in paramaters.items():
+        paramaters[key] = value.encode("gbk")
+    headers["Cookie"] = cookies
+
+    r = requests.post(url, data=paramaters, headers=headers)
+    r.encoding = "gbk"
+    if "审核" in r.text:
+        succ_msg = r.text[r.text.index("'")+1:]
+        succ_msg = succ_msg[:succ_msg.index("'")]
+        return True, succ_msg
+    elif "错误" in r.text:
+        err_msg = "提交后返回错误, 参数有误, 请修改后重新提交..."
+    elif "已经有人预约" in r.text:
+        err_msg = r.text[r.text.index("'")+1:]
+        err_msg = err_msg[:err_msg.index("'")]
+    else:
+        err_msg = r.text
+    return False, err_msg
 
 
-def get_config():
+def get_config(first_time=True):
     def make_content(describe, middle, annotation):
         content = b"%-20s\t%-5s\t%-100s\r\n" % (describe.encode("gbk"), middle.encode("gbk"), annotation.encode("gbk"))
         return content.decode("gbk")
@@ -123,6 +129,8 @@ def get_config():
             content += "#使用windows的童鞋, 保存本文件的时候请保持utf8编码, 不要用windows自带的gbk编码保存\r\n"
             content += "#更新日期: 2016-12-29\r\n"
             content += "#源码: http:\r\n"
+            content += make_content("用户名：", "()", "#用于登录")
+            content += make_content("密码：", "()", "#用于登录")
             content += make_content("能否独立使用仪器：", "()", "#能填数字0, 不能填数字1")
             content += make_content("要预约的仪器序号:", "()", "#将本文档往下拉查看序号, 如预约荧光光谱仪（F7000）则填入51")
             content += make_content("使用方向:", "()", "#填中文 (参考预约页面)")
@@ -142,10 +150,12 @@ def get_config():
                 gbk_content = b"#%-60s\t %-3s\r\n" % (value.encode("gbk"), key.encode("gbk"))
                 content += gbk_content.decode("gbk")
             f.write(content)
-        input("请打开当前目录的 %s 文件, 保存后按确认键继续...." % (config_dir, ))
+        input("已初始化 %s 文件, 请修改并保存按确认键继续....\r\n\r\n" % (config_dir, ))
 
-    file_order = ("independence", "machid", "direction", "startdate", "starttime", "enddate", "endtime",
-                  "sample", "handle", "aim", "describle", "argument", "special", "handles", "remark")
+    paramaters = {}
+    file_order = ("username", "password", "independence", "machid", "direction", "startdate", "starttime",
+                  "enddate", "endtime", "sample", "handle", "aim", "describle", "argument", "special", "handles",
+                  "remark")
     rgx = re.compile("\s+\((.+?)\)\s+")
     debug_line = ""
     if not os.path.exists(config_dir):
@@ -155,7 +165,7 @@ def get_config():
             i = 0
             for line in f.readlines():
                 debug_line = line
-                if line and line[0] != "#":
+                if line and line[0] != "#" and line[0] != "\n":
                     text = re.search(rgx, line).group(1).strip()
                     if "date" in file_order[i]:
                         date, time = text.split(" ")
@@ -167,14 +177,28 @@ def get_config():
                         i += 1
         if len(paramaters) != len(file_order):
                 raise ValueError
+        return paramaters
     except (ValueError, AttributeError) as e:
-        print("当前目录下的 %s 填写格式错误\n%s正在恢复默认文件格式..." % (config_dir, "请更正该行: " + debug_line if debug_line else ""))
+        if first_time:
+            print("当前目录下的 %s 填写格式错误\n%s正在恢复默认文件格式..." % (config_dir, "请更正该行: " + debug_line if debug_line else ""))
+        else:
+            print("数据格式不符")
         init_file()
-        get_config()
-    return paramaters
+        return get_config()
 
 
 if __name__ == "__main__":
-    p = get_config()
-    for k, v in p.items():
-        print(k, v)
+    paramaters = get_config()  # fill in paramaters
+    login_response = login(paramaters["username"], paramaters["password"])
+    while not login_response:
+        paramaters = get_config()
+        login_response = login(paramaters["username"], paramaters["password"])
+
+    success, msg = submit(login_response, paramaters)
+    while not success:
+        print("发生错误:", msg)
+        input("请打开当前目录的 %s 文件进行修改, 保存后按确认键继续....\r\n\r\n" % (config_dir,))
+        paramaters = get_config(False)
+        success, msg = submit(login_response, paramaters)
+
+    input("成功提交: " + msg + "\n按任意键继续")

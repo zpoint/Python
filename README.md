@@ -9,3 +9,4 @@
 3. [A srt download tool with **tkinter** and **urllib**](https://github.com/zpoint/Python/tree/master/srt%20download)
 4. [A image helper with **PIL** (图像批处理脚本)](https://github.com/zpoint/Python/blob/master/cut_img)
 5. [**image_to_string** function with **Tesseract-OCR**, **PIL**](https://github.com/zpoint/Python/blob/master/image_to_string.py)
+6. [[**An automatic script to submit**](https://github.com/zpoint/Python/blob/master/submit_script)]
