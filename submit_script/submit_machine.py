@@ -129,11 +129,11 @@ def get_config(first_time=True):
         return content.decode("gbk")
 
     def init_file():
-        with open(config_dir, "w", encoding="utf8") as f:
+        with open(config_dir, "w", encoding="gbk") as f:
             # gbk can align chinese characters
             content = "#请将回答填在下列括号内, 确保准确无误, 填写非中文字符时确保输入法切成英文\r\n"
-            content += "#使用windows的童鞋, 保存本文件的时候请保持utf8编码, 不要用windows自带的gbk编码保存\r\n"
-            content += "#更新日期: 2016-12-29\r\n"
+            content += "#为了方便使用windows的童鞋, 读写本文件的时候请保持gbk编码\r\n"
+            content += "#更新日期: 2016-12-30\r\n"
             content += "#源码: https://github.com/zpoint/Python/tree/master/submit_script\r\n"
             content += make_content("用户名：", "()", "#用于登录")
             content += make_content("密码：", "()", "#用于登录")
@@ -167,7 +167,7 @@ def get_config(first_time=True):
     if not os.path.exists(config_dir):
         init_file()
     try:
-        with open(config_dir, "r", encoding="utf8") as f:
+        with open(config_dir, "r", encoding="gbk") as f:
             i = 0
             for line in f.readlines():
                 debug_line = line
