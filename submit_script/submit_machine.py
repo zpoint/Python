@@ -103,9 +103,11 @@ def submit(login_response, parameters):
 
     r = requests.post(url, data=paramaters, headers=headers)
     r.encoding = "gbk"
-    if "审核" in r.text:
+    if "成功" in r.text:
         succ_msg = r.text[r.text.index("'")+1:]
         succ_msg = succ_msg[:succ_msg.index("'")]
+        if not succ_msg:
+            succ_msg = "提交成功"
         return True, succ_msg
     elif "错误" in r.text:
         err_msg = "提交后返回错误, 参数有误, 请修改后重新提交..."
@@ -128,7 +130,7 @@ def get_config(first_time=True):
             content = "#请将回答填在下列括号内, 确保准确无误, 填写非中文字符时确保输入法切成英文\r\n"
             content += "#使用windows的童鞋, 保存本文件的时候请保持utf8编码, 不要用windows自带的gbk编码保存\r\n"
             content += "#更新日期: 2016-12-29\r\n"
-            content += "#源码: http:\r\n"
+            content += "#源码: https://github.com/zpoint/Python/tree/master/submit_script\r\n"
             content += make_content("用户名：", "()", "#用于登录")
             content += make_content("密码：", "()", "#用于登录")
             content += make_content("能否独立使用仪器：", "()", "#能填数字0, 不能填数字1")
