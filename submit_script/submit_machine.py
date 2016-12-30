@@ -198,7 +198,7 @@ def get_config(first_time=True):
 
 
 if __name__ == "__main__":
-    interval = 3
+    interval = 0.1
     parameters = get_config()  # fill in paramaters
     login_response = login(parameters["username"], parameters["password"])
     while not login_response:
@@ -212,6 +212,7 @@ if __name__ == "__main__":
         if "不能超过两个星期" in msg:
             print("%.2f 秒后重试" % (interval, ))
             sleep(interval)
+            success, msg = submit(login_response, parameters)
         else:
             input("请打开当前目录的 %s 文件进行修改, 保存后按确认键继续....\r\n\r\n" % (config_dir,))
             parameters = get_config(False)
