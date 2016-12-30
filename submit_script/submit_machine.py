@@ -2,6 +2,7 @@ import re
 import urllib.request
 import urllib.parse
 import os.path
+from time import sleep
 
 machine_dict = {
     '15': 'X射线小角散射仪',
@@ -94,17 +95,17 @@ def submit(login_response, parameters):
     print("正在提交...")
     url = "http://192.168.30.2/booking_submit.asp?action=mach&userid=1399"
     # init parameters
-    paramaters.pop("username")
-    paramaters.pop("password")
+    parameters.pop("username")
+    parameters.pop("password")
     cookies = login_response.headers["Set-Cookie"].split(";")[0]
     left, right = cookies.split("=")
-    paramaters[left] = right
-    for key, value in paramaters.items():
-        paramaters[key] = value.encode("gbk")
+    parameters[left] = right
+    for key, value in parameters.items():
+        parameters[key] = value.encode("gbk")
     headers["Cookie"] = cookies
 
     req = urllib.request.Request(url, headers=headers)
-    data = urllib.parse.urlencode(paramaters).encode("gbk")
+    data = urllib.parse.urlencode(parameters).encode("gbk")
     response = urllib.request.urlopen(req, data=data)
     text = response.read().decode("gbk")
     if "成功" in text:
@@ -116,6 +117,9 @@ def submit(login_response, parameters):
     elif "错误" in text:
         err_msg = "提交后返回错误, 参数有误, 请修改后重新提交..."
     elif "已经有人预约" in text:
+        err_msg = text[text.index("'")+1:]
+        err_msg = err_msg[:err_msg.index("'")]
+    elif "不能超过两个星期" in text:
         err_msg = text[text.index("'")+1:]
         err_msg = err_msg[:err_msg.index("'")]
     else:
@@ -133,7 +137,7 @@ def get_config(first_time=True):
             # gbk can align chinese characters
             content = "#请将回答填在下列括号内, 确保准确无误, 填写非中文字符时确保输入法切成英文\r\n"
             content += "#为了方便使用windows的童鞋, 读写本文件的时候请保持gbk编码\r\n"
-            content += "#更新日期: 2016-12-30\r\n"
+            content += "#更新日期: 2016-12-31\r\n"
             content += "#源码: https://github.com/zpoint/Python/tree/master/submit_script\r\n"
             content += make_content("用户名：", "()", "#用于登录")
             content += make_content("密码：", "()", "#用于登录")
@@ -194,18 +198,23 @@ def get_config(first_time=True):
 
 
 if __name__ == "__main__":
-    paramaters = get_config()  # fill in paramaters
-    login_response = login(paramaters["username"], paramaters["password"])
+    interval = 3
+    parameters = get_config()  # fill in paramaters
+    login_response = login(parameters["username"], parameters["password"])
     while not login_response:
         input("请打开当前目录的 %s 文件进行修改, 保存后按确认键继续....\r\n\r\n" % (config_dir,))
-        paramaters = get_config()
-        login_response = login(paramaters["username"], paramaters["password"])
+        parameters = get_config()
+        login_response = login(parameters["username"], parameters["password"])
 
-    success, msg = submit(login_response, paramaters)
+    success, msg = submit(login_response, parameters)
     while not success:
         print("发生错误:", msg)
-        input("请打开当前目录的 %s 文件进行修改, 保存后按确认键继续....\r\n\r\n" % (config_dir,))
-        paramaters = get_config(False)
-        success, msg = submit(login_response, paramaters)
+        if "不能超过两个星期" in msg:
+            print("%.2f 秒后重试" % (interval, ))
+            sleep(interval)
+        else:
+            input("请打开当前目录的 %s 文件进行修改, 保存后按确认键继续....\r\n\r\n" % (config_dir,))
+            parameters = get_config(False)
+            success, msg = submit(login_response, parameters)
 
     input("成功提交: " + msg + "\n按任意键继续")

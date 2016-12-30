@@ -8,4 +8,3 @@
 ###Screenshots
 
 ![image](https://github.com/zpoint/Python/blob/master/submit_script/screenshot.png)
-
