@@ -95,18 +95,20 @@ def submit(login_response, parameters):
     print("正在提交...")
     url = "http://192.168.30.2/booking_submit.asp?action=mach&userid=1399"
     # init parameters
-    parameters.pop("username")
-    parameters.pop("password")
-    cookies = login_response.headers["Set-Cookie"].split(";")[0]
-    left, right = cookies.split("=")
-    parameters[left] = right
-    for key, value in parameters.items():
-        parameters[key] = value.encode("gbk")
-    headers["Cookie"] = cookies
+    if "username" in parameters:
+        parameters.pop("username")
+        parameters.pop("password")
+        cookies = login_response.headers["Set-Cookie"].split(";")[0]
+        left, right = cookies.split("=")
+        parameters[left] = right
+        for key, value in parameters.items():
+            parameters[key] = value.encode("gbk")
+        headers["Cookie"] = cookies
 
     req = urllib.request.Request(url, headers=headers)
     data = urllib.parse.urlencode(parameters).encode("gbk")
     response = urllib.request.urlopen(req, data=data)
+    # print(response.headers)
     text = response.read().decode("gbk")
     if "成功" in text:
         succ_msg = text[text.index("'")+1:]
@@ -198,7 +200,7 @@ def get_config(first_time=True):
 
 
 if __name__ == "__main__":
-    interval = 0.1
+    interval = 3
     parameters = get_config()  # fill in paramaters
     login_response = login(parameters["username"], parameters["password"])
     while not login_response:
