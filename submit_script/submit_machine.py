@@ -68,7 +68,25 @@ headers = {
     "Connection": "close",
     "Content-Type": "application/x-www-form-urlencoded"
 }
+usrid = ""
 config_dir = "machine_config.txt"
+
+
+def get_userid(login_response):
+    url = "http://192.168.30.2/booking.asp?action=mach"
+    cookies = login_response.headers["Set-Cookie"].split(";")[0]
+    headers["Cookie"] = cookies
+    req = urllib.request.Request(url, headers=headers)
+    response = urllib.request.urlopen(req)
+    text = response.read().decode("gbk")
+    rgx = re.compile("userid=(\d+)")
+    result = re.search(rgx, text)
+    if not result:
+        return False
+    # change userid
+    global usrid
+    usrid = result.group(1)
+    return True
 
 
 def login(username, password):
@@ -87,13 +105,16 @@ def login(username, password):
         err_msg = right_msg[:right_msg.index("'")]
         print("登录失败, 请修改配置文件后重新运行程序, 错误信息: %s" % (err_msg, ))
         return False
+    if not get_userid(response):
+        print("登录时获取用户ID失败...")
+        return False
     print("登陆成功...")
     return response
 
 
 def submit(login_response, parameters):
     print("正在提交...")
-    url = "http://192.168.30.2/booking_submit.asp?action=mach&userid=1399"
+    url = "http://192.168.30.2/booking_submit.asp?action=mach&userid=" + usrid
     # init parameters
     if "username" in parameters:
         parameters.pop("username")
@@ -139,7 +160,7 @@ def get_config(first_time=True):
             # gbk can align chinese characters
             content = "#请将回答填在下列括号内, 确保准确无误, 填写非中文字符时确保输入法切成英文\r\n"
             content += "#为了方便使用windows的童鞋, 读写本文件的时候请保持gbk编码\r\n"
-            content += "#更新日期: 2016-12-31\r\n"
+            content += "#更新日期: 2017-01-02\r\n"
             content += "#源码: https://github.com/zpoint/Python/tree/master/submit_script\r\n"
             content += make_content("用户名：", "()", "#用于登录")
             content += make_content("密码：", "()", "#用于登录")
