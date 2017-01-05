@@ -70,7 +70,7 @@ headers = {
 }
 usrid = ""
 config_dir = "machine_config.txt"
-
+interval = None
 
 def get_userid(login_response):
     url = "http://192.168.30.2/booking.asp?action=mach"
@@ -160,8 +160,9 @@ def get_config(first_time=True):
             # gbk can align chinese characters
             content = "#请将回答填在下列括号内, 确保准确无误, 填写非中文字符时确保输入法切成英文\r\n"
             content += "#为了方便使用windows的童鞋, 读写本文件的时候请保持gbk编码\r\n"
-            content += "#更新日期: 2017-01-02\r\n"
+            content += "#更新日期: 2017-01-05\r\n"
             content += "#源码: https://github.com/zpoint/Python/tree/master/submit_script\r\n"
+            content += make_content("刷新时间间隔：", "()", "#自动刷新的时间间隔(单位:秒) 填写 >= 0.5 的小数")
             content += make_content("用户名：", "()", "#用于登录")
             content += make_content("密码：", "()", "#用于登录")
             content += make_content("能否独立使用仪器：", "()", "#能填数字0, 不能填数字1")
@@ -191,6 +192,7 @@ def get_config(first_time=True):
                   "remark")
     rgx = re.compile("\s+\((.+?)\)\s+")
     debug_line = ""
+    global interval
     if not os.path.exists(config_dir):
         init_file()
     try:
@@ -200,7 +202,11 @@ def get_config(first_time=True):
                 debug_line = line
                 if line and line[0] != "#" and line[0] != "\n":
                     text = re.search(rgx, line).group(1).strip()
-                    if "date" in file_order[i]:
+                    if i == 0 and not interval:
+                        interval = float(text)
+                        if interval < 0.5:
+                            raise ValueError
+                    elif "date" in file_order[i]:
                         date, time = text.split(" ")
                         paramaters[file_order[i]] = date
                         paramaters[file_order[i + 1]] = time
@@ -221,7 +227,6 @@ def get_config(first_time=True):
 
 
 if __name__ == "__main__":
-    interval = 3
     parameters = get_config()  # fill in paramaters
     login_response = login(parameters["username"], parameters["password"])
     while not login_response:
