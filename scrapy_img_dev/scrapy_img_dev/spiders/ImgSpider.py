@@ -26,7 +26,7 @@ for url in urls:
 
 link_extractor = LinkExtractor(allow_domains=allow_domains)
 img_extractor = LinkExtractor(allow=allow_domains, deny_extensions=set(), tags=('img',), attrs=('src',), canonicalize=True, unique=True)
-max_level = 30
+max_level = 10
 
 
 class someSpider(CrawlSpider):
@@ -50,7 +50,7 @@ class someSpider(CrawlSpider):
             url = link.url
             if url not in link_set:
                 link_set.add(url)
-                logging.info("level: %d" % (level, ) + url)
+                logging.info("level: %d " % (level, ) + url)
                 yield scrapy.Request(url, callback=self.parse, meta={"level": level+1})
         for link in img_links:
             url = link.url
