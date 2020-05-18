@@ -1,3 +1,4 @@
+import os
 import scrapy
 import logging
 import tldextract
@@ -5,7 +6,8 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from ..urls import urls
 
-
+link_set = set()
+img_set = set()
 allow_domains = list()
 file_map = dict()
 for url in urls:
@@ -14,13 +16,16 @@ for url in urls:
     suffix = result.suffix
     real_domain = domain+"."+suffix
     allow_domains.append(real_domain)
-    file_map[real_domain] = open(domain + ".txt", "a")
+    txt_file = domain + ".txt"
+    if os.path.exists(txt_file):
+        with open(txt_file, "r") as f:
+            for line in f:
+                img_set.add(line.strip())
+    file_map[real_domain] = open(txt_file, "a")
 
 
 link_extractor = LinkExtractor(allow_domains=allow_domains)
 img_extractor = LinkExtractor(allow=allow_domains, deny_extensions=set(), tags=('img',), attrs=('src',), canonicalize=True, unique=True)
-link_set = set()
-img_set = set()
 max_level = 30
 
 
