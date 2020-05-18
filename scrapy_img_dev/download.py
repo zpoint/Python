@@ -25,6 +25,9 @@ for url in urls:
     domain = result.domain
     suffix = result.suffix
     real_domain = domain+"."+suffix
+    txt_file = domain + ".txt"
+    if not os.path.exists(txt_file):
+        continue
     file_map[real_domain] = open(domain + ".txt", "r")
 
 
@@ -49,7 +52,8 @@ def per_file_thread():
             file_map_lock.release()
         except StopIteration:
             file_map_lock.release()
-            logging.error(traceback.format_exc())
+            # logging.error(traceback.format_exc())
+            logging.info("per_file_thread, thread: %d exit" % (threading.get_ident(), ))
             return
 
         url_getter = get_url_getter(real_domain)
@@ -60,7 +64,7 @@ def per_file_thread():
             os.mkdir(base_dir)
         exists_set = os.listdir(base_dir)
         headers = copy.deepcopy(origin_headers)
-        headers["Host"] = real_domain
+        headers["Host"] = "www." + real_domain
         logging.warning("starting %d thread for real_domain: %s, base_dir: %s" % (thread_num, real_domain, base_dir))
         threads = list()
         for i in range(thread_num):
@@ -80,7 +84,8 @@ def downloader(url_getter, base_dir, exists_set, headers, lock):
             lock.release()
         except StopIteration:
             lock.release()
-            logging.error(traceback.format_exc())
+            # logging.error(traceback.format_exc())
+            logging.info("downloader, thread: %d exit" % (threading.get_ident(),))
             return
         file_name = url.split("/")[-1]
         if file_name in exists_set:
