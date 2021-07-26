@@ -42,7 +42,10 @@ id_ = url.split("/")[-1]
 # <img class="extend-original b-lazy b-loaded caiji_tupian" src="http://rushiwork.oss-cn-beijing.aliyuncs.com//works/wechat/202012/vh9kdwrushi.net.jpeg?x-oss-process=image/resize,w_800"
 r = requests.get(url, headers=headers)
 text = r.text
-res = re.findall("<.+?extend-original.+?src=\"(.+?)\".+?>", text, re.DOTALL)
+if "zcool.com" in url:
+    res = re.findall("\s+<img src=\"(http.+?)\".+?>", text, re.DOTALL)
+else:
+    res = re.findall("<.+?extend-original.+?src=\"(.+?)\".+?>", text, re.DOTALL)
 for each in res:
     img_url = each.replace("w_800", "w_3600")
     download_img(img_url)
